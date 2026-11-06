@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 (2026-11-06)
 
 - Collapse all and Expand all are now one arrow button (▾ / ▸), just below the pull request tab bar, that stays there while you scroll.
 

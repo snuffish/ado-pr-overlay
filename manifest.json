@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ADO Thread ID",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Shows each Azure DevOps pull request comment thread's ID as a click-to-copy badge, and collapses or expands threads.",
   "homepage_url": "https://github.com/snuffish/ado-thread-id-extension",
   "icons": {
