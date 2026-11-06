@@ -1,6 +1,6 @@
-# ADO Thread ID
+# ADO PR Overlay
 
-A browser extension that shows the thread ID of every comment thread on an Azure DevOps pull request.
+A browser extension that overlays an Azure DevOps pull request with each comment thread's ID and controls to collapse threads.
 
 Azure DevOps needs a thread's ID for the REST API, the `az` CLI and AI agents that reply to or resolve comments, but the web view never shows it. This extension puts a small `#113043` badge in the top-left corner of each thread. Click the badge to copy the ID.
 
@@ -22,7 +22,7 @@ The extension is not in the Chrome Web Store. Load it unpacked:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/snuffish/ado-thread-id-extension.git
+   git clone https://github.com/snuffish/ado-pr-overlay.git
    ```
 2. Open the extensions page: `brave://extensions` in Brave, `chrome://extensions` in Chrome, `edge://extensions` in Edge.
 3. Turn on **Developer mode**.
