@@ -53,6 +53,20 @@
   visibility: visible;
 }
 
+/* Stack collapsed cards tightly: drop the timeline row's 16px bottom padding and the
+   20px min-heights around its icon, which otherwise pad each row to 63px. */
+.bolt-timeline-row:has(.ado-tid-collapsed)
+  .bolt-timeline-cell-content
+  > *
+  > .padding-bottom-16 {
+  padding-bottom: 4px;
+}
+
+.bolt-timeline-row:has(.ado-tid-collapsed)
+  :is(.bolt-timeline-icon-prefix, .bolt-timeline-icon-suffix) {
+  min-height: 0;
+}
+
 .ado-tid-toolbar {
   position: fixed;
   right: 16px;
