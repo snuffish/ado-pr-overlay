@@ -116,10 +116,28 @@
     return bar;
   }
 
+  // The overlay belongs on the PR's Overview tab only. ADO marks the tab with ?_a=<tab>
+  // and leaves it out on Overview, the default.
+  function onOverview() {
+    if (!/\/pullrequest\/\d+/i.test(location.pathname)) return false;
+    const tab = new URLSearchParams(location.search).get("_a") ?? "overview";
+    return tab.toLowerCase() === "overview";
+  }
+
+  // ADO keeps cards alive across tab switches, so strip what earlier scans added.
+  function clear() {
+    bar.remove();
+    document.querySelectorAll(".ado-tid-controls").forEach((c) => c.remove());
+    document
+      .querySelectorAll(".ado-tid-host")
+      .forEach((c) => c.classList.remove("ado-tid-host", COLLAPSED));
+  }
+
   const bar = toolbar();
   let queued = false;
   function scan() {
     queued = false;
+    if (!onOverview()) return clear();
     const threads = document.querySelectorAll(THREAD);
     threads.forEach(badge);
     // Only show the toolbar on pages that have threads. It hangs under the PR's sticky

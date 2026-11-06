@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Renamed to ADO PR Overlay.
+- Fixed: the badges, toggles and arrow button showed on every pull request tab; they now appear only on Overview.
 
 ## 0.3.0 (2026-11-06)
 
