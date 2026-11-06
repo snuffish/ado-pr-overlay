@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "ADO Thread ID",
+  "version": "0.1.0",
+  "description": "Shows each Azure DevOps pull request comment thread's ID as a badge; click the badge to copy it.",
+  "content_scripts": [
+    {
+      "matches": ["https://dev.azure.com/*", "https://*.visualstudio.com/*"],
+      "js": ["content.js"],
+      "css": ["badge.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+.ado-tid-host {
+  position: relative;
+}
+
+.ado-tid-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 10;
+  padding: 1px 6px;
+  border: 0;
+  border-radius: 4px;
+  background: #0078d4;
+  color: #fff;
+  font:
+    600 11px/16px ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.ado-tid-badge:hover {
+  opacity: 1;
+}
