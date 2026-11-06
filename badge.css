@@ -62,6 +62,15 @@
   gap: 4px;
 }
 
+/* Under the sticky tab bar, left-aligned with the page content below it. */
+.repos-pr-details-page-tabbar > .ado-tid-toolbar {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: auto;
+  bottom: auto;
+  left: 32px;
+}
+
 .ado-tid-toolbar button {
   padding: 4px 10px;
   border: 0;

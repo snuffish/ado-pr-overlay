@@ -4,6 +4,7 @@
   const THREAD = ".repos-discussion-thread";
   const ID_CLASS = /\bthreadId-(\d+)\b/;
   const COLLAPSED = "ado-tid-collapsed";
+  const TABBAR = ".repos-pr-details-page-tabbar";
 
   // ADO re-renders threads, so collapse state lives here and is reapplied on every scan.
   let allCollapsed = false;
@@ -94,25 +95,24 @@
     true,
   );
 
-  function setAll(collapsed) {
-    allCollapsed = collapsed;
-    overrides.clear();
-    scan();
-  }
-
+  // One button flips every thread; its arrow matches the per-thread toggle.
   function toolbar() {
     const bar = document.createElement("div");
     bar.className = "ado-tid-toolbar";
-    for (const [label, collapsed] of [
-      ["Collapse all", true],
-      ["Expand all", false],
-    ]) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.textContent = label;
-      b.addEventListener("click", () => setAll(collapsed));
-      bar.append(b);
-    }
+    const b = document.createElement("button");
+    b.type = "button";
+    const label = () => {
+      b.textContent = allCollapsed ? "▸" : "▾";
+      b.title = allCollapsed ? "Expand all threads" : "Collapse all threads";
+    };
+    label();
+    b.addEventListener("click", () => {
+      allCollapsed = !allCollapsed;
+      overrides.clear();
+      label();
+      scan();
+    });
+    bar.append(b);
     return bar;
   }
 
@@ -122,9 +122,11 @@
     queued = false;
     const threads = document.querySelectorAll(THREAD);
     threads.forEach(badge);
-    // Only show the toolbar on pages that have threads.
-    if (threads.length && !bar.isConnected) document.body.append(bar);
-    else if (!threads.length && bar.isConnected) bar.remove();
+    // Only show the toolbar on pages that have threads. It hangs under the PR's sticky
+    // tab bar so it stays put while the page scrolls; without one it pins to the viewport.
+    const host = document.querySelector(TABBAR) ?? document.body;
+    if (!threads.length) bar.remove();
+    else if (bar.parentElement !== host) host.append(bar);
   }
 
   // Threads appear lazily and ADO switches pages without reloading, so rescan on DOM changes.

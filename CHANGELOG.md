@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Collapse all and Expand all are now one arrow button (▾ / ▸), just below the pull request tab bar, that stays there while you scroll.
+
 ## 0.2.0 (2026-11-06)
 
 - Collapse all / Expand all buttons for comment threads; click a collapsed thread to expand it.

@@ -11,7 +11,7 @@ On a long pull request it also lets you collapse threads, so you can skim the ID
 - A badge on every comment thread on the pull request page, in the top-left corner of the thread's card.
 - Click the badge to copy the ID to the clipboard; it shows "copied" for a second.
 - A ▾/▸ button right of each badge collapses or expands that one thread.
-- **Collapse all** / **Expand all** buttons in the bottom-right corner.
+- One arrow button (▾ / ▸) to collapse or expand every thread, just below the pull request's tab bar. It stays there while you scroll.
 - A collapsed thread is an empty, fixed-height card showing only its badge and toggle. Click anywhere on it to expand it.
 - Keeps working as you scroll, open threads or switch tabs. Azure DevOps changes pages without reloading, and the extension rescans when the page changes.
 - No permissions, no network requests, no settings, no build step.
@@ -38,7 +38,7 @@ Open a pull request on `dev.azure.com` or `<org>.visualstudio.com`. Each thread 
 To collapse threads:
 
 - Click ▾ beside a badge to collapse that thread, and ▸ to expand it again.
-- Click **Collapse all** or **Expand all** in the bottom-right corner to change every thread at once. This resets the threads you toggled one by one.
+- Click the ▾ arrow below the tab bar to collapse every thread; it turns into ▸, which expands them all again. This resets the threads you toggled one by one.
 - Collapse state lasts until you reload the page.
 
 The ID is the same number as `discussionId` in a thread's link and the `threadId` in the REST API, for example:
@@ -66,7 +66,7 @@ The extension asks for no permissions. It only runs on Azure DevOps pages, reads
 
 ## Limitations
 
-- The extension depends on Azure DevOps markup it doesn't own, namely `.repos-discussion-thread` and the `threadId-<id>` class. If Microsoft renames either, the badges disappear. Update `THREAD` or `ID_CLASS` at the top of [`content.js`](content.js). Badge placement and collapsing also rely on the thread sitting inside a `.bolt-card`, and on file comments using `.comment-file-header`. If either changes, the badge falls back to the thread's own corner or overlaps the file name.
+- The extension depends on Azure DevOps markup it doesn't own, namely `.repos-discussion-thread` and the `threadId-<id>` class. If Microsoft renames either, the badges disappear. Update `THREAD` or `ID_CLASS` at the top of [`content.js`](content.js). Badge placement and collapsing also rely on the thread sitting inside a `.bolt-card`, and on file comments using `.comment-file-header`. If either changes, the badge falls back to the thread's own corner or overlaps the file name. The toolbar hangs under `.repos-pr-details-page-tabbar`; without it, the toolbar falls back to the bottom-right corner.
 - A thread that renders without a reply box gets no badge, because the ID is read from that box.
 - Azure DevOps Server (on-premises) installs are not matched. Add your server's URL to `matches` in [`manifest.json`](manifest.json).
 
