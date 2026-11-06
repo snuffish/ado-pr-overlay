@@ -45,6 +45,7 @@ Azure DevOps renders each comment thread as a `.repos-discussion-thread` element
 | [`manifest.json`](manifest.json) | Manifest V3. Runs the content script on `https://dev.azure.com/*` and `https://*.visualstudio.com/*`. |
 | [`content.js`](content.js)       | Finds threads, reads their IDs and adds the badges.                                                   |
 | [`badge.css`](badge.css)         | Styles the badge.                                                                                     |
+| [`icons/`](icons)                | The extension icon: `icon.svg` is the source, the PNGs are rendered from it at 16, 32, 48 and 128 px. |
 
 ## Privacy
 

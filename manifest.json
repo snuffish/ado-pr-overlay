@@ -4,6 +4,12 @@
   "version": "0.1.0",
   "description": "Shows each Azure DevOps pull request comment thread's ID as a badge; click the badge to copy it.",
   "homepage_url": "https://github.com/snuffish/ado-thread-id-extension",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "content_scripts": [
     {
       "matches": ["https://dev.azure.com/*", "https://*.visualstudio.com/*"],

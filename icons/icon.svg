@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Speech bubble with a "#": a comment thread's ID. Filled shapes only, so every SVG renderer draws it the same. -->
+  <path d="M28 8h72a22 22 0 0 1 22 22v50a22 22 0 0 1-22 22H58l-28 20v-20h-2A22 22 0 0 1 6 80V30A22 22 0 0 1 28 8z" fill="#0078d4"/>
+  <g fill="#fff">
+    <polygon points="60.97,26.51 54.97,84.51 45.03,83.49 51.03,25.49"/>
+    <circle cx="56" cy="26" r="5"/>
+    <circle cx="50" cy="84" r="5"/>
+    <polygon points="84.97,26.51 78.97,84.51 69.03,83.49 75.03,25.49"/>
+    <circle cx="80" cy="26" r="5"/>
+    <circle cx="74" cy="84" r="5"/>
+    <rect x="31" y="39" width="68" height="10" rx="5"/>
+    <rect x="29" y="61" width="68" height="10" rx="5"/>
+  </g>
+</svg>
