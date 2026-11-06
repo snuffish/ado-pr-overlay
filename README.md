@@ -13,6 +13,7 @@ On a long pull request it also lets you collapse threads, so you can skim the ID
 - A ▾/▸ button right of each badge collapses or expands that one thread.
 - One arrow button (▾ / ▸) to collapse or expand every thread, just below the pull request's tab bar. It stays there while you scroll.
 - A collapsed thread is a compact, fixed-height card showing its badge and toggle, the file name for a file comment, and a green ✓ at the far right once the thread is resolved (any status but Active or Pending). Click anywhere on it to expand it.
+- Opening a thread link (`?discussionId=<id>`) outlines that thread in blue (fading out over 3 seconds), expands it and scrolls it into view just below the tab bar.
 - Shows only on the pull request's Overview tab, and keeps working as you scroll, open threads or switch tabs. Azure DevOps changes pages without reloading, and the extension rescans when the page changes.
 - No permissions, no network requests, no settings, no build step.
 

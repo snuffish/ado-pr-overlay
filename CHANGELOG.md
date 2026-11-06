@@ -7,6 +7,7 @@
 - Fixed: collapsed threads kept the timeline row's full spacing; they now stack 4px apart.
 - A collapsed file comment shows its file name, and a resolved thread shows a green ✓ at the far right.
 - Clicking a badge copies a link to the thread instead of the bare ID.
+- A thread link (`?discussionId=<id>`) outlines its thread in blue (fading out over 3 seconds), expands it and scrolls it clear of the sticky tab bar.
 
 ## 0.3.0 (2026-11-06)
 

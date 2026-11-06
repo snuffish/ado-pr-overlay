@@ -5,6 +5,7 @@
   const ID_CLASS = /\bthreadId-(\d+)\b/;
   const COLLAPSED = "ado-tid-collapsed";
   const RESOLVED = "ado-tid-is-resolved";
+  const LINKED = "ado-tid-linked";
   const TABBAR = ".repos-pr-details-page-tabbar";
 
   // ADO re-renders threads, so collapse state lives here and is reapplied on every scan.
@@ -118,8 +119,38 @@
       card.classList.add("ado-tid-host");
       card.prepend(controls(card, id));
     }
+    const linked = id === linkedId();
+    if (linked && revealed !== location.href) reveal(id);
+    // The outline fades out in CSS; dropping the class afterwards keeps a card ADO
+    // re-renders later from flashing it again.
+    card.classList.toggle(LINKED, linked && Date.now() < highlightUntil);
+    if (linked && Date.now() < pinUntil)
+      requestAnimationFrame(() => card.scrollIntoView({ block: "start" }));
     render(card, id);
   }
+
+  // A thread link (?discussionId=<id>) lands on a card ADO barely highlights and scrolls
+  // under the sticky tab bar. Outline that card, and once per URL expand it and scroll it
+  // into view; CSS scroll-margin keeps it clear of the tab bar. Threads above it keep
+  // loading and push it down, so each scan re-aligns it for a few seconds, until the
+  // user scrolls, clicks or types.
+  let revealed = null;
+  let pinUntil = 0;
+  let highlightUntil = 0;
+  const linkedId = () =>
+    new URLSearchParams(location.search).get("discussionId");
+
+  function reveal(id) {
+    revealed = location.href;
+    pinUntil = highlightUntil = Date.now() + 4000;
+    overrides.set(id, false);
+  }
+
+  for (const type of ["wheel", "touchstart", "mousedown", "keydown"])
+    addEventListener(type, () => (pinUntil = 0), {
+      capture: true,
+      passive: true,
+    });
 
   // A click on a collapsed card expands just that card instead of reaching ADO's controls.
   document.addEventListener(
@@ -171,7 +202,7 @@
     document
       .querySelectorAll(".ado-tid-host")
       .forEach((c) =>
-        c.classList.remove("ado-tid-host", COLLAPSED, RESOLVED),
+        c.classList.remove("ado-tid-host", COLLAPSED, RESOLVED, LINKED),
       );
   }
 

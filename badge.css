@@ -75,6 +75,36 @@
   text-overflow: ellipsis;
 }
 
+/* The thread a ?discussionId= link points at: an outline that fades out over 3s. The
+   margin clears the sticky tab bar while the script scrolls the card into view. */
+.ado-tid-linked {
+  outline: 3px solid transparent;
+  outline-offset: 2px;
+  scroll-margin-top: 120px;
+  animation: ado-tid-linked-fade 3s ease-in forwards;
+}
+
+/* ADO's own highlight of the linked comment, a box-shadow, fades with it. With no
+   "from" keyframe the animation starts at ADO's shadow, whatever it is. */
+.ado-tid-host .repos-comment-viewer.highlighted {
+  animation: ado-tid-shadow-fade 3s ease-in forwards;
+}
+
+@keyframes ado-tid-shadow-fade {
+  to {
+    box-shadow: none;
+  }
+}
+
+@keyframes ado-tid-linked-fade {
+  from {
+    outline-color: #0078d4;
+  }
+  to {
+    outline-color: transparent;
+  }
+}
+
 /* A resolved thread shows a green check at the collapsed card's far right. */
 .ado-tid-resolved {
   display: none;
