@@ -53,6 +53,44 @@
   visibility: visible;
 }
 
+/* A collapsed file comment names its file beside the toggle; expanded, ADO's header does. */
+.ado-tid-file {
+  display: none;
+}
+
+.ado-tid-collapsed .ado-tid-controls {
+  right: 4px;
+  align-items: center;
+}
+
+.ado-tid-collapsed .ado-tid-file:not(:empty) {
+  display: block;
+  min-width: 0;
+  margin-left: 6px;
+  overflow: hidden;
+  font:
+    600 12px/16px system-ui,
+    sans-serif;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* A resolved thread shows a green check at the collapsed card's far right. */
+.ado-tid-resolved {
+  display: none;
+}
+
+.ado-tid-collapsed.ado-tid-is-resolved .ado-tid-resolved {
+  display: block;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-right: 4px;
+  color: #107c10;
+  font:
+    700 14px/16px system-ui,
+    sans-serif;
+}
+
 /* Stack collapsed cards tightly: drop the timeline row's 16px bottom padding and the
    20px min-heights around its icon, which otherwise pad each row to 63px. */
 .bolt-timeline-row:has(.ado-tid-collapsed)

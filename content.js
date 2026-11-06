@@ -4,6 +4,7 @@
   const THREAD = ".repos-discussion-thread";
   const ID_CLASS = /\bthreadId-(\d+)\b/;
   const COLLAPSED = "ado-tid-collapsed";
+  const RESOLVED = "ado-tid-is-resolved";
   const TABBAR = ".repos-pr-details-page-tabbar";
 
   // ADO re-renders threads, so collapse state lives here and is reapplied on every scan.
@@ -33,6 +34,30 @@
       toggle.textContent = collapsed ? "▸" : "▾";
       toggle.title = collapsed ? "Expand thread" : "Collapse thread";
     }
+    // A file comment's header names the file; repeat it beside the toggle so a collapsed
+    // card still says which file it is about. CSS shows it only while collapsed.
+    const file = card.querySelector(
+      ":scope > .ado-tid-controls > .ado-tid-file",
+    );
+    const link = card.querySelector(".comment-file-header-link");
+    if (file && link) {
+      file.textContent = link.textContent.trim();
+      file.title = link.nextElementSibling?.textContent.trim() ?? "";
+    }
+    // The thread's status dropdown reads Active or Pending until someone resolves it; any
+    // other status (Resolved, Won't fix, Closed, By design) counts as resolved, as in ADO's
+    // own "comments resolved" tally. CSS shows the check only while collapsed.
+    const status = card
+      .querySelector(
+        ".repos-discussion-thread .bolt-dropdown-expandable-button-label",
+      )
+      ?.textContent.trim();
+    const resolved = !!status && !/^(active|pending)$/i.test(status);
+    card.classList.toggle(RESOLVED, resolved);
+    const check = card.querySelector(
+      ":scope > .ado-tid-controls > .ado-tid-resolved",
+    );
+    if (check) check.title = resolved ? status : "";
   }
 
   function setOne(card, id, collapsed) {
@@ -64,7 +89,12 @@
     const box = document.createElement("div");
     box.className = "ado-tid-controls";
     box.dataset.id = id;
-    box.append(badge, toggle);
+    const file = document.createElement("span");
+    file.className = "ado-tid-file";
+    const check = document.createElement("span");
+    check.className = "ado-tid-resolved";
+    check.textContent = "✓";
+    box.append(badge, toggle, file, check);
     return box;
   }
 
@@ -86,7 +116,7 @@
     "click",
     (e) => {
       const card = e.target.closest?.(`.${COLLAPSED}`);
-      if (!card || e.target.closest(".ado-tid-controls")) return;
+      if (!card || e.target.closest(".ado-tid-controls button")) return;
       e.preventDefault();
       e.stopPropagation();
       const id = threadIdOf(card);
@@ -130,7 +160,9 @@
     document.querySelectorAll(".ado-tid-controls").forEach((c) => c.remove());
     document
       .querySelectorAll(".ado-tid-host")
-      .forEach((c) => c.classList.remove("ado-tid-host", COLLAPSED));
+      .forEach((c) =>
+        c.classList.remove("ado-tid-host", COLLAPSED, RESOLVED),
+      );
   }
 
   const bar = toolbar();

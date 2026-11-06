@@ -5,6 +5,7 @@
 - Renamed to ADO PR Overlay.
 - Fixed: the badges, toggles and arrow button showed on every pull request tab; they now appear only on Overview.
 - Fixed: collapsed threads kept the timeline row's full spacing; they now stack 4px apart.
+- A collapsed file comment shows its file name, and a resolved thread shows a green ✓ at the far right.
 
 ## 0.3.0 (2026-11-06)
 
