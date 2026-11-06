@@ -2,11 +2,18 @@
   position: relative;
 }
 
-.ado-tid-badge {
+/* The ID badge and the collapse toggle, side by side in the card's top-left corner. */
+.ado-tid-controls {
   position: absolute;
   top: 4px;
   left: 4px;
   z-index: 10;
+  display: flex;
+  gap: 2px;
+}
+
+.ado-tid-badge,
+.ado-tid-toggle {
   padding: 1px 6px;
   border: 0;
   border-radius: 4px;
@@ -21,6 +28,53 @@
   opacity: 0.85;
 }
 
-.ado-tid-badge:hover {
+.ado-tid-badge:hover,
+.ado-tid-toggle:hover {
+  opacity: 1;
+}
+
+/* Make room for the badge above a file comment's header; ADO's own 12px puts the title under the badge. */
+.ado-tid-host .comment-file-header {
+  padding-top: 28px;
+}
+
+/* A collapsed card is an empty, fixed-height container holding only the badge and toggle. */
+.ado-tid-collapsed {
+  height: 28px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.ado-tid-collapsed * {
+  visibility: hidden;
+}
+
+.ado-tid-collapsed .ado-tid-controls * {
+  visibility: visible;
+}
+
+.ado-tid-toolbar {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  display: flex;
+  gap: 4px;
+}
+
+.ado-tid-toolbar button {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: #0078d4;
+  color: #fff;
+  font:
+    600 12px/16px system-ui,
+    sans-serif;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.ado-tid-toolbar button:hover {
   opacity: 1;
 }
