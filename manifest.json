@@ -3,6 +3,7 @@
   "name": "ADO Thread ID",
   "version": "0.1.0",
   "description": "Shows each Azure DevOps pull request comment thread's ID as a badge; click the badge to copy it.",
+  "homepage_url": "https://github.com/snuffish/ado-thread-id-extension",
   "content_scripts": [
     {
       "matches": ["https://dev.azure.com/*", "https://*.visualstudio.com/*"],
