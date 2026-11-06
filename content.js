@@ -65,15 +65,25 @@
     render(card, id);
   }
 
+  // The same link ADO builds for a thread: ?discussionId=<thread> on the pull request,
+  // plus #<comment> naming the thread's first comment when ADO has rendered it.
+  function threadUrl(card, id) {
+    const url = new URL(location.pathname, location.origin);
+    url.searchParams.set("discussionId", id);
+    const comment = card.querySelector(".repos-comment-viewer[id]")?.id;
+    if (comment) url.hash = comment;
+    return url.href;
+  }
+
   function controls(card, id) {
     const badge = document.createElement("button");
     badge.type = "button";
     badge.className = "ado-tid-badge";
     badge.textContent = `#${id}`;
-    badge.title = "Thread ID: click to copy";
+    badge.title = "Click to copy a link to this thread";
     badge.addEventListener("click", async (e) => {
       e.stopPropagation();
-      await navigator.clipboard.writeText(id);
+      await navigator.clipboard.writeText(threadUrl(card, id));
       badge.textContent = "copied";
       setTimeout(() => (badge.textContent = `#${id}`), 1000);
     });

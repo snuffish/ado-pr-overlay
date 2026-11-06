@@ -2,14 +2,14 @@
 
 A browser extension that overlays an Azure DevOps pull request with each comment thread's ID and controls to collapse threads.
 
-Azure DevOps needs a thread's ID for the REST API, the `az` CLI and AI agents that reply to or resolve comments, but the web view never shows it. This extension puts a small `#113043` badge in the top-left corner of each thread. Click the badge to copy the ID.
+Azure DevOps needs a thread's ID for the REST API, the `az` CLI and AI agents that reply to or resolve comments, but the web view never shows it. This extension puts a small `#113043` badge in the top-left corner of each thread. Click the badge to copy a link to the thread.
 
 On a long pull request it also lets you collapse threads, so you can skim the IDs or keep only the threads you're working on open.
 
 ## Features
 
 - A badge on every comment thread on the pull request page, in the top-left corner of the thread's card.
-- Click the badge to copy the ID to the clipboard; it shows "copied" for a second.
+- Click the badge to copy a link to the thread (`?discussionId=<id>#<first comment>`) to the clipboard; it shows "copied" for a second.
 - A ▾/▸ button right of each badge collapses or expands that one thread.
 - One arrow button (▾ / ▸) to collapse or expand every thread, just below the pull request's tab bar. It stays there while you scroll.
 - A collapsed thread is a compact, fixed-height card showing its badge and toggle, the file name for a file comment, and a green ✓ at the far right once the thread is resolved (any status but Active or Pending). Click anywhere on it to expand it.
@@ -33,7 +33,7 @@ To update, run `git pull` in the folder, click the reload icon on the extension'
 
 ## Usage
 
-Open a pull request's Overview tab on `dev.azure.com` or `<org>.visualstudio.com`. Each thread gets a blue badge with its ID. Click a badge to copy the ID.
+Open a pull request's Overview tab on `dev.azure.com` or `<org>.visualstudio.com`. Each thread gets a blue badge with its ID. Click a badge to copy a link to that thread.
 
 To collapse threads:
 
@@ -62,7 +62,7 @@ Collapsing adds a class to the card that fixes its height and hides everything i
 
 ## Privacy
 
-The extension asks for no permissions. It only runs on Azure DevOps pages, reads the page it runs on, sends nothing anywhere and stores nothing; collapse state lives in the page and is gone when you reload. The only time it writes anything is when you click a badge: it copies the ID to your clipboard.
+The extension asks for no permissions. It only runs on Azure DevOps pages, reads the page it runs on, sends nothing anywhere and stores nothing; collapse state lives in the page and is gone when you reload. The only time it writes anything is when you click a badge: it copies the thread's link to your clipboard.
 
 ## Limitations
 
