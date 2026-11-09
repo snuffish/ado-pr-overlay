@@ -11,6 +11,21 @@
   // ADO re-renders threads, so collapse state lives here and is reapplied on every scan.
   let allCollapsed = false;
   const overrides = new Map(); // thread ID -> collapsed, set by a card's own toggle
+let hideDrafts = false;
+
+function onPRList() {
+  return /\/pullrequests$/i.test(location.pathname);
+}
+
+function scanPRList() {
+  const rows = document.querySelectorAll('[role="row"], .pr-list-item, tr');
+  rows.forEach(row => {
+    const isDraft = Array.from(row.querySelectorAll('span, div')).some(el => 
+      el.textContent.trim() === "Draft" && !el.firstElementChild
+    );
+    row.style.display = (hideDrafts && isDraft) ? "none" : "";
+  });
+}
 
   const isCollapsed = (id) => overrides.get(id) ?? allCollapsed;
 
@@ -170,21 +185,62 @@
   function toolbar() {
     const bar = document.createElement("div");
     bar.className = "ado-tid-toolbar";
-    const b = document.createElement("button");
-    b.type = "button";
-    const label = () => {
-      b.textContent = allCollapsed ? "▸" : "▾";
-      b.title = allCollapsed ? "Expand all threads" : "Collapse all threads";
-    };
-    label();
-    b.addEventListener("click", () => {
-      allCollapsed = !allCollapsed;
-      overrides.clear();
-      label();
-      scan();
-    });
-    bar.append(b);
     return bar;
+  }
+
+  let lastContext = null;
+
+  function syncToolbar() {
+    const isOverview = onOverview();
+    const isList = onPRList();
+    const context = isOverview ? "overview" : isList ? "list" : "none";
+
+    if (context === lastContext && bar.children.length > 0) {
+      const btns = bar.querySelectorAll("button");
+      btns.forEach(b => {
+        if (isOverview && b.title?.includes("threads")) {
+          b.textContent = allCollapsed ? "▸" : "▾";
+          b.title = allCollapsed ? "Expand all threads" : "Collapse all threads";
+        }
+        if (isList && b.textContent.includes("Drafts")) {
+          b.textContent = hideDrafts ? "Show Drafts" : "Hide Drafts";
+        }
+      });
+      return;
+    }
+
+    lastContext = context;
+    bar.innerHTML = "";
+    if (isOverview) {
+      const b = document.createElement("button");
+      b.type = "button";
+      const update = () => {
+        b.textContent = allCollapsed ? "▸" : "▾";
+        b.title = allCollapsed ? "Expand all threads" : "Collapse all threads";
+      };
+      update();
+      b.addEventListener("click", () => {
+        allCollapsed = !allCollapsed;
+        overrides.clear();
+        update();
+        scan();
+      });
+      bar.append(b);
+    }
+    if (isList) {
+      const db = document.createElement("button");
+      db.type = "button";
+      const update = () => {
+        db.textContent = hideDrafts ? "Show Drafts" : "Hide Drafts";
+      };
+      update();
+      db.addEventListener("click", () => {
+        hideDrafts = !hideDrafts;
+        update();
+        scan();
+      });
+      bar.append(db);
+    }
   }
 
   // The overlay belongs on the PR's Overview tab only. ADO marks the tab with ?_a=<tab>
@@ -210,14 +266,25 @@
   let queued = false;
   function scan() {
     queued = false;
-    if (!onOverview()) return clear();
-    const threads = document.querySelectorAll(THREAD);
-    threads.forEach(badge);
-    // Only show the toolbar on pages that have threads. It hangs under the PR's sticky
-    // tab bar so it stays put while the page scrolls; without one it pins to the viewport.
-    const host = document.querySelector(TABBAR) ?? document.body;
-    if (!threads.length) bar.remove();
-    else if (bar.parentElement !== host) host.append(bar);
+    const isOverview = onOverview();
+    const isList = onPRList();
+    if (!isOverview && !isList) return clear();
+
+    syncToolbar();
+
+    if (isOverview) {
+      const threads = document.querySelectorAll(THREAD);
+      threads.forEach(badge);
+      const host = document.querySelector(TABBAR) ?? document.body;
+      if (!threads.length) bar.remove();
+      else if (bar.parentElement !== host) host.append(bar);
+    }
+
+    if (isList) {
+      scanPRList();
+      const host = document.body;
+      if (bar.parentElement !== host) host.append(bar);
+    }
   }
 
   // Threads appear lazily and ADO switches pages without reloading, so rescan on DOM changes.
