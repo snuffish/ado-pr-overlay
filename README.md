@@ -41,7 +41,7 @@ To collapse threads:
 
 - Click ▾ beside a badge to collapse that thread, and ▸ to expand it again.
 - Click the ▾ arrow below the tab bar to collapse every thread; it turns into ▸, which expands them all again. This resets the threads you toggled one by one.
-- On the pull request list page, click the "Hide Drafts" button to filter out drafts.
+- On the pull request list page, click the "Hide Drafts" button to filter out drafts. This setting is saved and persists across page refreshes.
 - Collapse state lasts until you reload the page.
 
 The ID is the same number as `discussionId` in a thread's link and the `threadId` in the REST API, for example:

@@ -1,6 +1,6 @@
 // Azure DevOps renders each comment thread as .repos-discussion-thread; its reply box
 // carries the thread ID as a class name (threadId-<id>). Badge every thread that has one.
-(() => {
+(async () => {
   const THREAD = ".repos-discussion-thread";
   const ID_CLASS = /\bthreadId-(\d+)\b/;
   const COLLAPSED = "ado-tid-collapsed";
@@ -11,7 +11,9 @@
   // ADO re-renders threads, so collapse state lives here and is reapplied on every scan.
   let allCollapsed = false;
   const overrides = new Map(); // thread ID -> collapsed, set by a card's own toggle
-let hideDrafts = false;
+  let hideDrafts = false;
+  const { hideDrafts: savedHideDrafts } = await chrome.storage.local.get("hideDrafts");
+  if (savedHideDrafts !== undefined) hideDrafts = savedHideDrafts;
 
 function onPRList() {
   return /\/pullrequests$/i.test(location.pathname);
@@ -234,8 +236,9 @@ function scanPRList() {
         db.textContent = hideDrafts ? "Show Drafts" : "Hide Drafts";
       };
       update();
-      db.addEventListener("click", () => {
+      db.addEventListener("click", async () => {
         hideDrafts = !hideDrafts;
+        await chrome.storage.local.set({ hideDrafts });
         update();
         scan();
       });
