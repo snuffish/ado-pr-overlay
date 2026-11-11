@@ -12,22 +12,35 @@
   let allCollapsed = false;
   const overrides = new Map(); // thread ID -> collapsed, set by a card's own toggle
   let hideDrafts = false;
-  const { hideDrafts: savedHideDrafts } = await chrome.storage.local.get("hideDrafts");
+  const { hideDrafts: savedHideDrafts } =
+    await chrome.storage.local.get("hideDrafts");
   if (savedHideDrafts !== undefined) hideDrafts = savedHideDrafts;
+  let hideAiThreads = false;
+  const { hideAiThreads: savedHideAiThreads } =
+    await chrome.storage.local.get("hideAiThreads");
+  if (savedHideAiThreads !== undefined) hideAiThreads = savedHideAiThreads;
+  const AI = "ado-tid-ai";
+  const AI_HIDDEN = "ado-tid-ai-hidden";
+  // AI-posted threads open with a marker line: "🤖 AI review (…), read and approved by …".
+  const AI_MARKER = /^\W*AI review\b/;
 
-function onPRList() {
-  return /\/pullrequests$/i.test(location.pathname);
-}
+  function onPRList() {
+    return /\/pullrequests$/i.test(location.pathname);
+  }
 
-function scanPRList() {
-  const rows = document.querySelectorAll('[role="row"], .pr-list-item, tr');
-  rows.forEach(row => {
-    const isDraft = Array.from(row.querySelectorAll('span, div')).some(el => 
-      el.textContent.trim() === "Draft" && !el.firstElementChild
-    );
-    row.style.display = (hideDrafts && isDraft) ? "none" : "";
-  });
-}
+  // Hides draft rows when the filter is on; returns how many drafts the list shows.
+  function scanPRList() {
+    const rows = document.querySelectorAll('[role="row"], .pr-list-item, tr');
+    let drafts = 0;
+    rows.forEach((row) => {
+      const isDraft = Array.from(row.querySelectorAll("span, div")).some(
+        (el) => el.textContent.trim() === "Draft" && !el.firstElementChild,
+      );
+      if (isDraft) drafts++;
+      row.style.display = hideDrafts && isDraft ? "none" : "";
+    });
+    return drafts;
+  }
 
   const isCollapsed = (id) => overrides.get(id) ?? allCollapsed;
 
@@ -76,6 +89,13 @@ function scanPRList() {
       ":scope > .ado-tid-controls > .ado-tid-resolved",
     );
     if (check) check.title = resolved ? status : "";
+    // Only the thread's first comment decides, so a human thread with an AI reply stays.
+    const first = card
+      .querySelector(".repos-discussion-thread .repos-comment-viewer p")
+      ?.textContent.trim();
+    const ai = AI_MARKER.test(first ?? "");
+    card.classList.toggle(AI, ai);
+    card.classList.toggle(AI_HIDDEN, hideAiThreads && ai);
   }
 
   function setOne(card, id, collapsed) {
@@ -183,67 +203,46 @@ function scanPRList() {
     true,
   );
 
-  // One button flips every thread; its arrow matches the per-thread toggle.
-  function toolbar() {
-    const bar = document.createElement("div");
-    bar.className = "ado-tid-toolbar";
-    return bar;
+  function button(onClick) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.addEventListener("click", onClick);
+    return b;
   }
 
-  let lastContext = null;
+  // One button flips every thread; its arrow matches the per-thread toggle. It hangs
+  // under the PR's sticky tab bar.
+  const bar = document.createElement("div");
+  bar.className = "ado-tid-toolbar";
+  const collapseBtn = button(() => {
+    allCollapsed = !allCollapsed;
+    overrides.clear();
+    scan();
+  });
+  bar.append(collapseBtn);
 
-  function syncToolbar() {
-    const isOverview = onOverview();
-    const isList = onPRList();
-    const context = isOverview ? "overview" : isList ? "list" : "none";
+  // The filters sit in the bottom-right corner: AI threads on Overview, drafts on the list.
+  const filters = document.createElement("div");
+  filters.className = "ado-tid-toolbar";
+  const aiBtn = button(async () => {
+    hideAiThreads = !hideAiThreads;
+    await chrome.storage.local.set({ hideAiThreads });
+    scan();
+  });
+  const draftBtn = button(async () => {
+    hideDrafts = !hideDrafts;
+    await chrome.storage.local.set({ hideDrafts });
+    scan();
+  });
 
-    if (context === lastContext && bar.children.length > 0) {
-      const btns = bar.querySelectorAll("button");
-      btns.forEach(b => {
-        if (isOverview && b.title?.includes("threads")) {
-          b.textContent = allCollapsed ? "▸" : "▾";
-          b.title = allCollapsed ? "Expand all threads" : "Collapse all threads";
-        }
-        if (isList && b.textContent.includes("Drafts")) {
-          b.textContent = hideDrafts ? "Show Drafts" : "Hide Drafts";
-        }
-      });
-      return;
-    }
+  // Write a label only when it changes, so the MutationObserver doesn't rescan for nothing.
+  function label(b, text, title = "") {
+    if (b.textContent !== text) b.textContent = text;
+    if (b.title !== title) b.title = title;
+  }
 
-    lastContext = context;
-    bar.innerHTML = "";
-    if (isOverview) {
-      const b = document.createElement("button");
-      b.type = "button";
-      const update = () => {
-        b.textContent = allCollapsed ? "▸" : "▾";
-        b.title = allCollapsed ? "Expand all threads" : "Collapse all threads";
-      };
-      update();
-      b.addEventListener("click", () => {
-        allCollapsed = !allCollapsed;
-        overrides.clear();
-        update();
-        scan();
-      });
-      bar.append(b);
-    }
-    if (isList) {
-      const db = document.createElement("button");
-      db.type = "button";
-      const update = () => {
-        db.textContent = hideDrafts ? "Show Drafts" : "Hide Drafts";
-      };
-      update();
-      db.addEventListener("click", async () => {
-        hideDrafts = !hideDrafts;
-        await chrome.storage.local.set({ hideDrafts });
-        update();
-        scan();
-      });
-      bar.append(db);
-    }
+  function place(el, host) {
+    if (el.parentElement !== host) host.append(el);
   }
 
   // The overlay belongs on the PR's Overview tab only. ADO marks the tab with ?_a=<tab>
@@ -257,15 +256,22 @@ function scanPRList() {
   // ADO keeps cards alive across tab switches, so strip what earlier scans added.
   function clear() {
     bar.remove();
+    filters.remove();
     document.querySelectorAll(".ado-tid-controls").forEach((c) => c.remove());
     document
       .querySelectorAll(".ado-tid-host")
       .forEach((c) =>
-        c.classList.remove("ado-tid-host", COLLAPSED, RESOLVED, LINKED),
+        c.classList.remove(
+          "ado-tid-host",
+          COLLAPSED,
+          RESOLVED,
+          LINKED,
+          AI,
+          AI_HIDDEN,
+        ),
       );
   }
 
-  const bar = toolbar();
   let queued = false;
   function scan() {
     queued = false;
@@ -273,20 +279,34 @@ function scanPRList() {
     const isList = onPRList();
     if (!isOverview && !isList) return clear();
 
-    syncToolbar();
-
     if (isOverview) {
+      draftBtn.remove();
       const threads = document.querySelectorAll(THREAD);
       threads.forEach(badge);
-      const host = document.querySelector(TABBAR) ?? document.body;
-      if (!threads.length) bar.remove();
-      else if (bar.parentElement !== host) host.append(bar);
+      if (!threads.length) {
+        bar.remove();
+        filters.remove();
+        return;
+      }
+      label(
+        collapseBtn,
+        allCollapsed ? "▸" : "▾",
+        allCollapsed ? "Expand all threads" : "Collapse all threads",
+      );
+      const ai = document.querySelectorAll(`.${AI}`).length;
+      label(aiBtn, `${hideAiThreads ? "Show" : "Hide"} AI Threads (${ai})`);
+      place(bar, document.querySelector(TABBAR) ?? document.body);
+      place(aiBtn, filters);
+      place(filters, document.body);
     }
 
     if (isList) {
-      scanPRList();
-      const host = document.body;
-      if (bar.parentElement !== host) host.append(bar);
+      bar.remove();
+      aiBtn.remove();
+      const drafts = scanPRList();
+      label(draftBtn, `${hideDrafts ? "Show" : "Hide"} Drafts (${drafts})`);
+      place(draftBtn, filters);
+      place(filters, document.body);
     }
   }
 

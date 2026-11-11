@@ -135,6 +135,12 @@
   min-height: 0;
 }
 
+/* "Hide AI Threads": drop the card and the timeline row around it. */
+.ado-tid-ai-hidden,
+.bolt-timeline-row:has(.ado-tid-ai-hidden) {
+  display: none;
+}
+
 .ado-tid-toolbar {
   position: fixed;
   right: 16px;

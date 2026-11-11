@@ -12,7 +12,8 @@ On a long pull request it also lets you collapse threads, so you can skim the ID
 - Click the badge to copy a link to the thread (`?discussionId=<id>#<first comment>`) to the clipboard; it shows "copied" for a second.
 - A ▾/▸ button right of each badge collapses or expands that one thread.
 - One arrow button (▾ / ▸) to collapse or expand every thread, just below the pull request's tab bar. It stays there while you scroll.
-- A "Hide Drafts" toggle on the pull request list page (`/pullrequests`) that filters out draft pull requests from the view.
+- A "Hide Drafts (<count>)" toggle in the bottom-right corner of the pull request list page (`/pullrequests`) that filters out draft pull requests from the view.
+- A "Hide AI Threads (<count>)" toggle in the bottom-right corner of the Overview tab that hides threads whose first comment starts with the "🤖 AI review" marker.
 - A collapsed thread is a compact, fixed-height card showing its badge and toggle, the file name for a file comment, and a green ✓ at the far right once the thread is resolved (any status but Active or Pending). Click anywhere on it to expand it.
 - Opening a thread link (`?discussionId=<id>`) outlines that thread in blue (fading out over 3 seconds), expands it and scrolls it into view just below the tab bar.
 - Shows on the pull request's Overview tab and the pull request list page. It keeps working as you scroll, open threads or switch tabs. Azure DevOps changes pages without reloading, and the extension rescans when the page changes.
@@ -42,6 +43,7 @@ To collapse threads:
 - Click ▾ beside a badge to collapse that thread, and ▸ to expand it again.
 - Click the ▾ arrow below the tab bar to collapse every thread; it turns into ▸, which expands them all again. This resets the threads you toggled one by one.
 - On the pull request list page, click the "Hide Drafts" button to filter out drafts. This setting is saved and persists across page refreshes.
+- On the Overview tab, click "Hide AI Threads" to hide AI-posted threads. This setting is saved too.
 - Collapse state lasts until you reload the page.
 
 The ID is the same number as `discussionId` in a thread's link and the `threadId` in the REST API, for example:
