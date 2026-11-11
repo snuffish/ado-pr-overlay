@@ -159,7 +159,14 @@
   left: 32px;
 }
 
-.ado-tid-toolbar button {
+/* Files tab: one arrow that collapses or expands every folder in the tree. */
+.ado-tid-tree-toolbar {
+  position: fixed;
+  z-index: 1000;
+}
+
+.ado-tid-toolbar button,
+.ado-tid-tree-toolbar button {
   padding: 4px 10px;
   border: 0;
   border-radius: 4px;
@@ -172,6 +179,7 @@
   opacity: 0.85;
 }
 
-.ado-tid-toolbar button:hover {
+.ado-tid-toolbar button:hover,
+.ado-tid-tree-toolbar button:hover {
   opacity: 1;
 }

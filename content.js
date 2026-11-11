@@ -245,12 +245,81 @@
     if (el.parentElement !== host) host.append(el);
   }
 
-  // The overlay belongs on the PR's Overview tab only. ADO marks the tab with ?_a=<tab>
-  // and leaves it out on Overview, the default.
-  function onOverview() {
+  // ADO marks the PR tab with ?_a=<tab> and leaves it out on Overview, the default.
+  function onTab(name) {
     if (!/\/pullrequest\/\d+/i.test(location.pathname)) return false;
     const tab = new URLSearchParams(location.search).get("_a") ?? "overview";
-    return tab.toLowerCase() === "overview";
+    return tab.toLowerCase() === name;
+  }
+
+  // The Files tab's tree is a bolt tree: each folder (and each file with comments) is a
+  // row with aria-expanded, toggled by its own chevron button.
+  const TREE = '[role="tree"], [role="treegrid"], .bolt-tree';
+  const treeBar = document.createElement("div");
+  treeBar.className = "ado-tid-tree-toolbar";
+  let treeBusy = false;
+  const treeBtn = button(() => {
+    const tree = document.querySelector(TREE);
+    if (tree && !treeBusy) setTree(tree, !!tree.querySelector('[aria-expanded="true"]'));
+  });
+  treeBar.append(treeBtn);
+
+  // Pin the button to the top-right corner of the tree's scrolling panel, so it stays put
+  // however far the tree is scrolled.
+  function scroller(el) {
+    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement)
+      if (/(auto|scroll)/.test(getComputedStyle(p).overflowY)) return p;
+    return el;
+  }
+
+  function pinTreeBar(tree) {
+    const box = scroller(tree).getBoundingClientRect();
+    const top = `${Math.max(box.top, 0) + 4}px`;
+    const left = `${box.right - treeBar.offsetWidth - 20}px`;
+    if (treeBar.style.top !== top) treeBar.style.top = top;
+    if (treeBar.style.left !== left) treeBar.style.left = left;
+  }
+
+  for (const type of ["resize", "scroll"])
+    addEventListener(
+      type,
+      () => {
+        const tree = treeBar.isConnected && document.querySelector(TREE);
+        if (tree) pinTreeBar(tree);
+      },
+      { capture: true, passive: true },
+    );
+
+  // Rows render as their parents open and are virtualized, so flip what is on screen,
+  // deepest first, then look again on the next frame until nothing is left to flip.
+  function setTree(tree, collapse) {
+    treeBusy = true;
+    const want = collapse ? "true" : "false";
+    let rounds = 0;
+    const step = () => {
+      const rows = Array.from(
+        tree.querySelectorAll(`[aria-expanded="${want}"]`),
+      ).sort(
+        (a, b) =>
+          (Number(b.getAttribute("aria-level")) || 0) -
+          (Number(a.getAttribute("aria-level")) || 0),
+      );
+      if (!rows.length || ++rounds > 50) {
+        treeBusy = false;
+        return;
+      }
+      // Only the chevron: a click on the row itself opens that file or folder in the diff.
+      const chevrons = rows
+        .map((row) => row.querySelector(".bolt-tree-expand-button"))
+        .filter(Boolean);
+      if (!chevrons.length) {
+        treeBusy = false;
+        return;
+      }
+      for (const chevron of chevrons) chevron.click();
+      setTimeout(step, 50);
+    };
+    step();
   }
 
   // ADO keeps cards alive across tab switches, so strip what earlier scans added.
@@ -275,9 +344,29 @@
   let queued = false;
   function scan() {
     queued = false;
-    const isOverview = onOverview();
+    const isOverview = onTab("overview");
+    const isFiles = onTab("files");
     const isList = onPRList();
-    if (!isOverview && !isList) return clear();
+    if (!isOverview && !isFiles && !isList) {
+      treeBar.remove();
+      return clear();
+    }
+
+    if (isFiles) {
+      clear();
+      const tree = document.querySelector(TREE);
+      if (!tree) return treeBar.remove();
+      const expanded = !!tree.querySelector('[aria-expanded="true"]');
+      label(
+        treeBtn,
+        expanded ? "▾" : "▸",
+        expanded ? "Collapse all folders" : "Expand all folders",
+      );
+      place(treeBar, document.body);
+      pinTreeBar(tree);
+      return;
+    }
+    treeBar.remove();
 
     if (isOverview) {
       draftBtn.remove();
