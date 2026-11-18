@@ -7,6 +7,10 @@
 - Fixed: collapsed threads kept the timeline row's full spacing; they now stack 4px apart.
 - A collapsed file comment shows its file name, and a resolved thread shows a green ✓ at the far right.
 - Clicking a badge copies a link to the thread instead of the bare ID.
+- The pull request list has one filter button in place of "Hide Drafts". Its ▾ menu picks a mode, and the button turns that mode on or off. The choice is remembered.
+  - **To act on** shows only PRs that need you: reviews you haven't started (drafts left out), PRs where you voted Waiting for author and the author has since commented or pushed, and your own PRs that a reviewer blocked or replied on.
+  - **Hide drafts** hides draft PRs.
+  - **Hide waiting for author** hides PRs where your vote is Waiting for author or Rejected.
 - On the Files tab, an arrow button above the file tree collapses or expands every folder at once.
 - A thread link (`?discussionId=<id>`) outlines its thread in blue (fading out over 3 seconds), expands it and scrolls it clear of the sticky tab bar.
 

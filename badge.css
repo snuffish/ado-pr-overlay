@@ -183,3 +183,70 @@
 .ado-tid-tree-toolbar button:hover {
   opacity: 1;
 }
+
+/* PR list: one split button; its mode menu opens upwards from the corner. */
+.ado-tid-split {
+  position: relative;
+  display: flex;
+  gap: 1px;
+}
+
+.ado-tid-toolbar .ado-tid-split > button {
+  border-radius: 4px 0 0 4px;
+}
+
+.ado-tid-toolbar .ado-tid-split > .ado-tid-menu-toggle {
+  border-radius: 0 4px 4px 0;
+  padding: 4px 8px;
+}
+
+.ado-tid-toolbar .ado-tid-split > .ado-tid-off {
+  background: #fff;
+  color: #0078d4;
+  box-shadow: inset 0 0 0 1px #0078d4;
+}
+
+.ado-tid-filter-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  min-width: 240px;
+  padding: 4px 0;
+  border: 1px solid #c8c8c8;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 20%);
+}
+
+.ado-tid-filter-menu[hidden] {
+  display: none;
+}
+
+.ado-tid-toolbar .ado-tid-filter-menu button {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: 0;
+  background: transparent;
+  color: #222;
+  font-weight: 400;
+  text-align: left;
+  opacity: 1;
+}
+
+.ado-tid-toolbar .ado-tid-filter-menu button:hover {
+  background: #f0f6fd;
+}
+
+.ado-tid-toolbar .ado-tid-filter-menu .ado-tid-current {
+  background: #eaf3fc;
+  font-weight: 600;
+}
+
+.ado-tid-filter-menu hr {
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
